@@ -5,7 +5,7 @@
 </head>
 <body>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="height:400px"></div>
+    <div id="main" style="height:800px"></div>
     <!-- ECharts单文件引入 -->
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
@@ -13,29 +13,79 @@
         var app = {
             createChart_day: function(datajson){
                 var myChart = echarts.init(document.getElementById('main'));
+                var xAxisData = [];
+                var combineData = [];
+                // var combineData = [ [], [], [], []];
+                datajson.forEach((v) => {
+                    xAxisData.push(v[1]);
+                    var arr = new Array()
+                    arr.push(v[2]);
+                    arr.push(v[3]);
+                    arr.push(v[5]);
+                    arr.push(v[4]);
+                    combineData.push(arr.join());
+                    }
+                )
+                console.log(combineData);
                 var option = {
-                    tooltip: {
-                        show: true
+                    title: {
+                      text: 'Bitcoin History Data'
                     },
+                    // tooltip: {
+                    //     trigger: 'axis',
+                    //     showDelay: 0,
+                    //     formatter: function(params){
+                    //
+                    //     }
+                    // },
                     legend: {
-                        data: ['销量']
+                        data: ['history', 'price', 'volume']
                     },
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            mark : {show: true},
+                            dataZoom : {show: true},
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    dataZoom : {
+                        y: 250,
+                        show : true,
+                        realtime: true,
+                        start : 50,
+                        end : 100
+                    },
+                    // grid: {
+                    //     x: 80,
+                    //     y: 40,
+                    //     x2:20,
+                    //     y2:25
+                    // },
                     xAxis: [
                         {
                             type: 'category',
-                            data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+                            boundaryGap : true,
+                            axisTick: {onGap:false},
+                            splitLine: {show:false},
+                            data: xAxisData
                         }
                     ],
                     yAxis: [
                         {
-                            type: 'value'
+                            type: 'value',
+                            scale:true,
+                            boundaryGap: [0.01, 0.01],
+                            splitArea : {show : true}
                         }
                     ],
                     series: [
                         {
-                            "name": "销量",
-                            "type": "bar",
-                            "data": [5, 20, 40, 10, 10, 20]
+                            "name": "history",
+                            "type": "k",
+                            "data": combineData
                         }
                     ]
                 };
