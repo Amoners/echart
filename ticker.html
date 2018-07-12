@@ -13,14 +13,17 @@
         var app = {
             createChart_history: function(datajson){
                 var hisChart = echarts.init(document.getElementById('day'));
+                var volChart = echarts.init(document.getElementById('volume'));
                 var xAxisData = [];
                 var combineData = Array();
+                var volumeData = Array();
                 datajson.forEach((v) => {
+                    var vol = v[7].replace(/[,]/g, "")  // remove ',' in digit
                     xAxisData.push(v[1]);
+                    volumeData.push(vol);
                     combineData.push([v[2],v[3],v[5],v[4]]);
                 })
                 xAxisData.sort();
-                console.log(combineData);
                 var option = {
                     title: {
                       text: 'Bitcoin History Data'
@@ -88,43 +91,24 @@
                     ]
                     // TODO: add point highest and lowest
                 };
-                // 为echarts对象加载数
-                hisChart.setOption(option);
 
-            },
 
-            // chart for price
-            createChart_price: function(datajson){
-            },  // end of createChart_price
-
-            //chart for volume
-            createChart_volume: function(datajson){
-                var volChart = echarts.init(document.getElementById('volume'));
-                var xAxisData = [];
-                var volumeData = Array();
-                datajson.forEach((v) => {
-                    xAxisData.push(v[1]);
-                    var vol = v[7].replace(/[,]/g, "")  // remove ',' in digit
-                    volumeData.push(vol);
-                })
-                xAxisData.sort();
-                console.log(volumeData);
                 var option2 = {
                     tooptip: {
                         trigger: 'axis',
-                        showDelay: 0
+                        showDelay: 0,
                     },
-                    // legend: {
-                    //     // y: -30,
-                    //     data: ['history', 'price', 'volume']
-                    // },
-                    // dataZoom: {
-                    //     y: 200,
-                    //     show: true,
-                    //     realtime: true,
-                    //     start: 50,
-                    //     end: 100
-                    // },
+                    legend: {
+                        // y: -30,
+                        data: ['history', 'price', 'volume']
+                    },
+                    dataZoom: {
+                        y: 200,
+                        show: true,
+                        realtime: true,
+                        start: 50,
+                        end: 100
+                    },
                     grid: {
                         x: 80,
                         y: 5,
@@ -165,8 +149,11 @@
                         }
                     ]
                 }
-                volChart.setOption(option2)
-            },// end of createChart_volume
+                hisChart.setOption(option);
+                volChart.setOption(option2);
+                hisChart.connect([volChart]);
+                volChart.connect([hisChart]);
+            },
 
         ajxUrlMap:{
             day_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin',
@@ -179,9 +166,6 @@
                 url: req_url,
                 success: function (res) {
                     app.createChart_history(res);
-                    app.createChart_price(res);
-                    app.createChart_volume(res);
-
                 },
                 error: function (err) {
                 }
