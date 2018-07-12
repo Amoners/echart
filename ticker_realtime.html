@@ -5,7 +5,7 @@
 </head>
 <body>
     <div id="day" style="height:400px"></div>
-    <div id="price" style="height:200px"></div>
+    <!--<div id="price" style="height:200px"></div>-->
     <div id="volume" style="height:200px"></div>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
@@ -13,7 +13,6 @@
         var app = {
             createChart_history: function(datajson){
                 var hisChart = echarts.init(document.getElementById('day'));
-                var priChart = echarts.init(document.getElementById('price'));
                 var volChart = echarts.init(document.getElementById('volume'));
                 var xAxisData = [];
                 var combineData = Array();
@@ -145,86 +144,23 @@
                         {
                             name: 'Volume',
                             type: 'bar',
-                            itemStyle: {
-                                normal: {
-                                    color: '#ff9912'
+                            itemStyle:{
+                                normal:{
+                                    color:'#ff9912'
                                 }
                             },
                             // symbol: 'none',
                             data: volumeData
                         }
-                    ],
+                    ]
                     // TODO: average line for volume
-                };
 
-                var option3 = {
-                    tooltip: {
-                        trigger: 'axis',
-                        showDelay: 0,
-                    },
-                    legend: {
-                        y: -30,
-                        data: ['history', 'price', 'volume']
-                    },
-                    dataZoom: {
-                        y: 200,
-                        show: true,
-                        realtime: true,
-                        start: 50,
-                        end: 100
-                    },
-                    grid: {
-                        x: 80,
-                        y: 5,
-                        x2: 20,
-                        y2: 30
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            position: 'buttom',
-                            boundaryGap: true,
-                            axisTick: {onGap: false},
-                            splitLine: {show: false},
-                            data: xAxisData
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            scale: true,
-                            //splitNumber: 3,
-                            boundaryGap: [0.01, 0.01],
-                            axisLabel: {
-                                formatter: function (v) {
-                                    return Math.round(v / 10000000) + ' M'
-                                }
-                            },
-                            splitArea: {show: true}
-                        }
-                    ],
-                    series: [
-                        {
-                            name: 'Volume',
-                            type: 'bar',
-                            itemStyle: {
-                                normal: {
-                                    color: '#ff9912'
-                                }
-                            },
-                            // symbol: 'none',
-                            data: volumeData
-                        }
-                    ],
-                    // TODO: average line for volume
-                };
 
+                }
                 hisChart.setOption(option);
-                priChart.setOption(option2);
-                volChart.setOption(option3);
-                hisChart.connect([volChart, priChart]);
-                priChart.connect([volChart,hisChart]);
-                volChart.connect([hisChart, priChart]);
+                volChart.setOption(option2);
+                hisChart.connect([volChart]);
+                volChart.connect([hisChart]);
             },
 
         ajxUrlMap:{
