@@ -4,111 +4,29 @@
     <title>ECharts</title>
 </head>
 <body>
-    <div id="day" style="height:400px"></div>
-    <!--<div id="price" style="height:200px"></div>-->
-    <div id="volume" style="height:200px"></div>
+    <div id="price" style="height:300px"></div>
+    <ul>
+        <li>2018-07-10</li>
+    </ul>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         var app = {
             createChart_history: function(datajson){
-                var hisChart = echarts.init(document.getElementById('day'));
-                var volChart = echarts.init(document.getElementById('volume'));
+                var priChart = echarts.init(document.getElementById('price'));
                 var xAxisData = [];
-                var combineData = Array();
-                var volumeData = Array();
+                var priceData = Array();
                 datajson.forEach((v) => {
-                    var vol = v[7].replace(/[,]/g, "")  // remove ',' in digit
-                    xAxisData.push(v[1]);
-                    volumeData.push(vol);
-                    combineData.push([v[2],v[3],v[5],v[4]]);
+                    var format_date = v[0].substring(11,16)
+                    xAxisData.push(format_date);
+                    priceData.push(v[1]);
                 })
+                console.log(priceData);
                 xAxisData.sort();
                 var option = {
-                    title: {
-                      text: 'Bitcoin History Data'
-                    },
                     tooltip: {
                         trigger: 'axis',
                         showDelay: 0,
-                        formatter: function(params){
-                                       var res = params[0].name;
-                                       res += '<br/>' + 'Bitcoin';
-                                       res += '<br/>  Open : ' + params[0].value[0] + '  High : ' + params[0].value[3];
-                                       res += '<br/>  Close : ' + params[0].value[1] + '  Low : ' + params[0].value[2];
-                                       return res;
-                        }
-                    },
-                    // legend: {
-                    //     data: ['history', 'price', 'volume']
-                    // },
-                    // 时间范围选择条
-                    dataZoom : {
-                        show : true,
-                        realtime: true,
-                        start : 50,
-                        end : 100
-
-                    },
-                    grid: {
-                        x: 80,
-                        y: 40,
-                        x2:20,
-                        y2:75
-                    },
-                    xAxis: [
-                        {
-                            type: 'category',
-                            boundaryGap : true,
-                            axisTick: {onGap:false},
-                            splitLine: {show:false},
-                            data: xAxisData
-                        }
-                    ],
-                    yAxis: [
-                        {
-                            type: 'value',
-                            scale:true,
-                            boundaryGap: [0.01, 0.01],
-                            splitArea : {show : true}
-                        }
-                    ],
-                    series: [
-                        {
-                            "name": "history",
-                            "type": "k",
-                            "data": combineData
-                        },
-                        {
-                            name:'price',
-                            type:'line',
-                            symbol: 'none',
-                            data:[]
-                        },
-                        {
-                            name:'value',
-                            type:'bar',data:[]
-                        }
-                    ]
-                    // TODO: add point highest and lowest
-                };
-
-
-                var option2 = {
-                    tooltip: {
-                        trigger: 'axis',
-                        showDelay: 0,
-                    },
-                    legend: {
-                        y: -30,
-                        data: ['history', 'price', 'volume']
-                    },
-                    dataZoom: {
-                        y: 200,
-                        show: true,
-                        realtime: true,
-                        start: 50,
-                        end: 100
                     },
                     grid: {
                         x: 80,
@@ -132,41 +50,28 @@
                             scale: true,
                             //splitNumber: 3,
                             boundaryGap: [0.01, 0.01],
-                            axisLabel: {
-                                formatter: function (v) {
-                                    return Math.round(v / 10000000) + ' M'
-                                }
-                            },
                             splitArea: {show: true}
                         }
                     ],
                     series: [
                         {
-                            name: 'Volume',
-                            type: 'bar',
-                            itemStyle:{
-                                normal:{
-                                    color:'#ff9912'
+                            name: 'Price',
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    color: '#4169e1'
                                 }
                             },
                             // symbol: 'none',
-                            data: volumeData
+                            data: priceData
                         }
-                    ]
+                    ],
                     // TODO: average line for volume
+                };
 
 
-                }
-                hisChart.setOption(option);
-                volChart.setOption(option2);
-                hisChart.connect([volChart]);
-                volChart.connect([hisChart]);
+                priChart.setOption(option);
             },
-
-        ajxUrlMap:{
-            day_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin',
-            price_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin'
-        },
 
         fetchChartTicker_day(req_url)
         {
@@ -179,7 +84,30 @@
                 }
             });
         }
-        }
-        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin");
+        } // end of app
+        function get_date() {
+            var date = new Date();
+            var nowMonth = date.getMonth() + 1;
+            var strDate = date.getDate();
+            var seperator = "-";
+            if (nowMonth >= 1 && nowMonth <= 9) {
+                nowMonth = "0" + nowMonth;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+            var nowDate = date.getFullYear() + seperator + nowMonth + seperator + strDate;
+            return nowDate;
+        };
+        base_url = "http://47.75.103.110:5000/dv_ccxt_ticker/symbol=BTC-USDT&column=datetime,last&datetime="
+        req_url = base_url + get_date();
+        app.fetchChartTicker_day(req_url);
+        $(document).ready(function() {
+            $("li").click(function(){
+             nowDate = $(this).text();
+             req_url = base_url + nowDate;
+             app.fetchChartTicker_day(req_url);
+                });
+        });
     </script>
 </body>

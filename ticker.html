@@ -18,10 +18,12 @@
                 var xAxisData = [];
                 var combineData = Array();
                 var volumeData = Array();
+                var priceData = Array();
                 datajson.forEach((v) => {
                     var vol = v[7].replace(/[,]/g, "")  // remove ',' in digit
                     xAxisData.push(v[1]);
                     volumeData.push(vol);
+                    priceData.push(v[3]);
                     combineData.push([v[2],v[3],v[5],v[4]]);
                 })
                 xAxisData.sort();
@@ -133,25 +135,20 @@
                             scale: true,
                             //splitNumber: 3,
                             boundaryGap: [0.01, 0.01],
-                            axisLabel: {
-                                formatter: function (v) {
-                                    return Math.round(v / 10000000) + ' M'
-                                }
-                            },
                             splitArea: {show: true}
                         }
                     ],
                     series: [
                         {
-                            name: 'Volume',
-                            type: 'bar',
+                            name: 'Price',
+                            type: 'line',
                             itemStyle: {
                                 normal: {
-                                    color: '#ff9912'
+                                    color: '#4169e1'
                                 }
                             },
                             // symbol: 'none',
-                            data: volumeData
+                            data: priceData
                         }
                     ],
                     // TODO: average line for volume
@@ -227,11 +224,6 @@
                 volChart.connect([hisChart, priChart]);
             },
 
-        ajxUrlMap:{
-            day_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin',
-            price_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin'
-        },
-
         fetchChartTicker_day(req_url)
         {
             $.ajax({
@@ -244,6 +236,7 @@
             });
         }
         }
-        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin");
+        req_url = "http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin";
+        app.fetchChartTicker_day(req_url);
     </script>
 </body>
