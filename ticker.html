@@ -15,42 +15,47 @@
                 var myChart = echarts.init(document.getElementById('main'));
                 var xAxisData = [];
                 var combineData = [];
-                // var combineData = [ [], [], [], []];
                 datajson.forEach((v) => {
                     xAxisData.push(v[1]);
-                    var arr = new Array()
-                    arr.push(v[2]);
-                    arr.push(v[3]);
-                    arr.push(v[5]);
-                    arr.push(v[4]);
-                    combineData.push(arr.join());
-                    }
+                    // var arr = new Array()
+                    // arr.push(v[2]);
+                    // arr.push(v[3]);
+                    // arr.push(v[5]);
+                    // arr.push(v[4]);
+                    // combineData.push(arr.join());
+                }
                 )
-                console.log(combineData);
+                //console.log(combineData);
+                xAxisData.sort();
                 var option = {
                     title: {
                       text: 'Bitcoin History Data'
                     },
-                    // tooltip: {
-                    //     trigger: 'axis',
-                    //     showDelay: 0,
-                    //     formatter: function(params){
-                    //
-                    //     }
-                    // },
+                    tooltip: {
+                        trigger: 'axis',
+                        showDelay: 0,
+                        formatter: function(params){
+                                       var res = params[0].name;
+            res += '<br/>' + params[0].seriesName;
+            res += '<br/>  开盘 : ' + params[0].value[0] + '  最高 : ' + params[0].value[3];
+            res += '<br/>  收盘 : ' + params[0].value[1] + '  最低 : ' + params[0].value[2];
+            return res;
+
+                        }
+                    },
                     legend: {
                         data: ['history', 'price', 'volume']
                     },
-                    toolbox: {
-                        show : true,
-                        feature : {
-                            mark : {show: true},
-                            dataZoom : {show: true},
-                            magicType : {show: true, type: ['line', 'bar']},
-                            restore : {show: true},
-                            saveAsImage : {show: true}
-                        }
-                    },
+                    // toolbox: {
+                    //     show : true,
+                    //     feature : {
+                    //         mark : {show: true},
+                    //         dataZoom : {show: true},
+                    //         magicType : {show: true, type: ['line', 'bar']},
+                    //         restore : {show: true},
+                    //         saveAsImage : {show: true}
+                    //     }
+                    // },
                     dataZoom : {
                         y: 250,
                         show : true,
@@ -58,12 +63,12 @@
                         start : 50,
                         end : 100
                     },
-                    // grid: {
-                    //     x: 80,
-                    //     y: 40,
-                    //     x2:20,
-                    //     y2:25
-                    // },
+                    grid: {
+                        x: 80,
+                        y: 40,
+                        x2:20,
+                        y2:25
+                    },
                     xAxis: [
                         {
                             type: 'category',
@@ -85,7 +90,11 @@
                         {
                             "name": "history",
                             "type": "k",
-                            "data": combineData
+                            // "data": combineData
+                            "data": [
+                                [6730.21, 6329.95,6320.72,6767.74],
+                                [6775.08,6741.75,6724.34,6838.68]
+                            ]
                         }
                     ]
                 };
@@ -113,6 +122,6 @@
             });
         }
         }
-        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin");
+        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin&limit=2");
     </script>
 </body>
