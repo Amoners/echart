@@ -5,7 +5,7 @@
 </head>
 <body>
     <div id="day" style="height:400px"></div>
-    <div id="price" style="height:200px"></div>
+    <!--<div id="price" style="height:200px"></div>-->
     <div id="volume" style="height:200px"></div>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
@@ -39,21 +39,22 @@
                                        return res;
                         }
                     },
-                    legend: {
-                        data: ['history', 'price', 'volume']
-                    },
+                    // legend: {
+                    //     data: ['history', 'price', 'volume']
+                    // },
                     // 时间范围选择条
                     dataZoom : {
                         show : true,
                         realtime: true,
                         start : 50,
                         end : 100
+
                     },
                     grid: {
                         x: 80,
                         y: 40,
                         x2:20,
-                        y2:25
+                        y2:75
                     },
                     xAxis: [
                         {
@@ -94,12 +95,12 @@
 
 
                 var option2 = {
-                    tooptip: {
+                    tooltip: {
                         trigger: 'axis',
                         showDelay: 0,
                     },
                     legend: {
-                        // y: -30,
+                        y: -30,
                         data: ['history', 'price', 'volume']
                     },
                     dataZoom: {
@@ -139,15 +140,22 @@
                             splitArea: {show: true}
                         }
                     ],
-
                     series: [
                         {
                             name: 'Volume',
                             type: 'bar',
-                            symbol: 'none',
+                            itemStyle:{
+                                normal:{
+                                    color:'#ff9912'
+                                }
+                            },
+                            // symbol: 'none',
                             data: volumeData
                         }
                     ]
+                    // TODO: average line for volume
+
+
                 }
                 hisChart.setOption(option);
                 volChart.setOption(option2);
