@@ -4,23 +4,23 @@
     <title>ECharts</title>
 </head>
 <body>
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="height:800px"></div>
-    <!-- ECharts单文件引入 -->
+    <div id="day" style="height:400px"></div>
+    <div id="price" style="height:200px"></div>
+    <div id="volume" style="height:200px"></div>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         var app = {
-            createChart_day: function(datajson){
-                var myChart = echarts.init(document.getElementById('main'));
+            createChart_history: function(datajson){
+                var hisChart = echarts.init(document.getElementById('day'));
                 var xAxisData = [];
                 var combineData = Array();
                 datajson.forEach((v) => {
                     xAxisData.push(v[1]);
                     combineData.push([v[2],v[3],v[5],v[4]]);
-                }
-                )
+                })
                 xAxisData.sort();
+                console.log(combineData);
                 var option = {
                     title: {
                       text: 'Bitcoin History Data'
@@ -30,28 +30,17 @@
                         showDelay: 0,
                         formatter: function(params){
                                        var res = params[0].name;
-            res += '<br/>' + params[0].seriesName;
-            res += '<br/>  开盘 : ' + params[0].value[0] + '  最高 : ' + params[0].value[3];
-            res += '<br/>  收盘 : ' + params[0].value[1] + '  最低 : ' + params[0].value[2];
-            return res;
-
+                                       res += '<br/>' + 'Bitcoin';
+                                       res += '<br/>  Open : ' + params[0].value[0] + '  High : ' + params[0].value[3];
+                                       res += '<br/>  Close : ' + params[0].value[1] + '  Low : ' + params[0].value[2];
+                                       return res;
                         }
                     },
                     legend: {
                         data: ['history', 'price', 'volume']
                     },
-                    // toolbox: {
-                    //     show : true,
-                    //     feature : {
-                    //         mark : {show: true},
-                    //         dataZoom : {show: true},
-                    //         magicType : {show: true, type: ['line', 'bar']},
-                    //         restore : {show: true},
-                    //         saveAsImage : {show: true}
-                    //     }
-                    // },
+                    // 时间范围选择条
                     dataZoom : {
-                        y: 250,
                         show : true,
                         realtime: true,
                         start : 50,
@@ -85,14 +74,99 @@
                             "name": "history",
                             "type": "k",
                             "data": combineData
+                        },
+                        {
+                            name:'price',
+                            type:'line',
+                            symbol: 'none',
+                            data:[]
+                        },
+                        {
+                            name:'value',
+                            type:'bar',data:[]
                         }
                     ]
+                    // TODO: add point highest and lowest
                 };
                 // 为echarts对象加载数
-                myChart.setOption(option);
+                hisChart.setOption(option);
 
             },
 
+            // chart for price
+            createChart_price: function(datajson){
+            },  // end of createChart_price
+
+            //chart for volume
+            createChart_volume: function(datajson){
+                var volChart = echarts.init(document.getElementById('volume'));
+                var xAxisData = [];
+                var volumeData = Array();
+                datajson.forEach((v) => {
+                    xAxisData.push(v[1]);
+                    var vol = v[7].replace(/[,]/g, "")  // remove ',' in digit
+                    volumeData.push(vol);
+                })
+                xAxisData.sort();
+                console.log(volumeData);
+                var option2 = {
+                    tooptip: {
+                        trigger: 'axis',
+                        showDelay: 0
+                    },
+                    // legend: {
+                    //     // y: -30,
+                    //     data: ['history', 'price', 'volume']
+                    // },
+                    // dataZoom: {
+                    //     y: 200,
+                    //     show: true,
+                    //     realtime: true,
+                    //     start: 50,
+                    //     end: 100
+                    // },
+                    grid: {
+                        x: 80,
+                        y: 5,
+                        x2: 20,
+                        y2: 30
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            position: 'buttom',
+                            boundaryGap: true,
+                            axisTick: {onGap: false},
+                            splitLine: {show: false},
+                            data: xAxisData
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            scale: true,
+                            //splitNumber: 3,
+                            boundaryGap: [0.01, 0.01],
+                            axisLabel: {
+                                formatter: function (v) {
+                                    return Math.round(v / 10000000) + ' M'
+                                }
+                            },
+                            splitArea: {show: true}
+                        }
+                    ],
+
+                    series: [
+                        {
+                            name: 'Volume',
+                            type: 'bar',
+                            symbol: 'none',
+                            data: volumeData
+                        }
+                    ]
+                }
+                volChart.setOption(option2)
+            },// end of createChart_volume
 
         ajxUrlMap:{
             day_url: 'http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin',
@@ -104,7 +178,9 @@
             $.ajax({
                 url: req_url,
                 success: function (res) {
-                    app.createChart_day(res);
+                    app.createChart_history(res);
+                    app.createChart_price(res);
+                    app.createChart_volume(res);
 
                 },
                 error: function (err) {
