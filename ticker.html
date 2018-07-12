@@ -8,6 +8,7 @@
     <div id="price" style="height:200px"></div>
     <div id="volume" style="height:200px"></div>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         var app = {
@@ -224,17 +225,17 @@
                 volChart.connect([hisChart, priChart]);
             },
 
-        fetchChartTicker_day(req_url)
-        {
-            $.ajax({
-                url: req_url,
-                success: function (res) {
-                    app.createChart_history(res);
-                },
-                error: function (err) {
-                }
-            });
-        }
+            fetchChartTicker_day(url){
+                axios.get(url).then(function(response){
+                    if (response.status && response.status == 200 && response.status == 'error') {
+                        console.log(response)
+                        return;
+                    }
+                    app.createChart_history(response.data)
+                }).catch(function(error){
+                    console.log(error)
+                })
+            }
         }
         req_url = "http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin";
         app.fetchChartTicker_day(req_url);

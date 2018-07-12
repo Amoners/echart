@@ -6,9 +6,14 @@
 <body>
     <div id="price" style="height:300px"></div>
     <ul>
-        <li>2018-07-10</li>
+        <li>1H</li>
+        <li>1D</li>
+        <li>1W</li>
+        <li>1Y</li>
+        <li>ALL</li>
     </ul>
     <script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
     <script type="text/javascript">
         var app = {
@@ -73,17 +78,17 @@
                 priChart.setOption(option);
             },
 
-        fetchChartTicker_day(req_url)
-        {
-            $.ajax({
-                url: req_url,
-                success: function (res) {
-                    app.createChart_history(res);
-                },
-                error: function (err) {
-                }
-            });
-        }
+        fetchChartTicker_day(url){
+                axios.get(url).then(function(response){
+                    if (response.status && response.status == 200 && response.status == 'error') {
+                        console.log(response)
+                        return;
+                    }
+                    app.createChart_history(response.data)
+                }).catch(function(error){
+                    console.log(error)
+                })
+            }
         } // end of app
         function get_date() {
             var date = new Date();
