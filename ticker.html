@@ -14,18 +14,12 @@
             createChart_day: function(datajson){
                 var myChart = echarts.init(document.getElementById('main'));
                 var xAxisData = [];
-                var combineData = [];
+                var combineData = Array();
                 datajson.forEach((v) => {
                     xAxisData.push(v[1]);
-                    // var arr = new Array()
-                    // arr.push(v[2]);
-                    // arr.push(v[3]);
-                    // arr.push(v[5]);
-                    // arr.push(v[4]);
-                    // combineData.push(arr.join());
+                    combineData.push([v[2],v[3],v[5],v[4]]);
                 }
                 )
-                //console.log(combineData);
                 xAxisData.sort();
                 var option = {
                     title: {
@@ -90,11 +84,7 @@
                         {
                             "name": "history",
                             "type": "k",
-                            // "data": combineData
-                            "data": [
-                                [6730.21, 6329.95,6320.72,6767.74],
-                                [6775.08,6741.75,6724.34,6838.68]
-                            ]
+                            "data": combineData
                         }
                     ]
                 };
@@ -122,6 +112,6 @@
             });
         }
         }
-        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin&limit=2");
+        app.fetchChartTicker_day("http://47.75.103.110:5000/dv_coinmarket_history/symbol=bitcoin");
     </script>
 </body>
