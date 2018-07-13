@@ -227,10 +227,6 @@
 
             fetchChartTicker_day(url){
                 axios.get(url).then(function(response){
-                    if (response.status && response.status == 200 && response.status == 'error') {
-                        console.log(response)
-                        return;
-                    }
                     app.createChart_history(response.data)
                 }).catch(function(error){
                     console.log(error)
